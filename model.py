@@ -29,12 +29,16 @@ class FusionModel(torch.nn.Module):
         super(FusionModel, self).__init__()
 
         self.use_layer = nn.Sequential(nn.Linear(3, 8),
+                                       nn.Dropout(p=0.2),
                                               nn.ReLU(),
                                               nn.Linear(8, 8),
+                                       nn.Dropout(p=0.2),
                                               nn.ReLU(),
                                               nn.Linear(8, 8),
+                                       nn.Dropout(p=0.2),
                                               nn.ReLU(),
-                                              nn.Linear(8, 1)
+                                              nn.Linear(8, 1),
+                                       nn.Dropout(p=0.2)
                                               )
 
         self.text_encoder = nn.Sequential(nn.Linear(20, 128),
@@ -64,6 +68,8 @@ class FusionModel(torch.nn.Module):
 
         self.last_layer = nn.Linear(9, 3)
 
+        self.dropout = nn.Dropout(p=0.5)
+
 
     def forward(self, user, aural, visual, text):
         user = self.use_layer(user)
@@ -77,10 +83,10 @@ class FusionModel(torch.nn.Module):
         media = self.conv5(media)
 
         media = torch.squeeze(media)
-        media = self.media_layer(media)
+        media = self.dropout(self.media_layer(media))
 
         fusion = torch.concat([media, user], dim=1)
-        output = self.last_layer(fusion)
+        output = self.dropout(self.last_layer(fusion))
         return output
 
     def init_weights(self, pretrained='',):

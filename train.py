@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 from tqdm import tqdm
 from torch import nn
 from utils import setup_seed
@@ -68,10 +69,28 @@ def main():
             tbar.set_description('Train loss: %.3f' % (losses))
 
         val = validata(val_loader, model, criterion, cuda)
-        if val < best_val:
-            best_val = val
-            torch.save(model.state_dict(), 'save_{}_{}.pt'.format(str(epoch), str(val)))
-        print("current best val loss: {}".format(str(best_val)))
+        # if val < best_val:
+        #     best_val = val
+        #     torch.save(model.state_dict(), 'save_{}_{}.pt'.format(str(epoch), str(val)))
+        # print("current best val loss: {}".format(str(best_val)))
+
+        test_loader = make_dataloader('all', False, 100)
+
+        output = []
+        tbar = tqdm(test_loader)
+        for i, sample in enumerate(tbar):
+
+            user, aural, visual, text = sample['user'], sample['aural'], sample['visual'], sample['text']
+            if cuda:
+                user = user.cuda().float()
+                visual = visual.cuda().float()
+                aural = aural.cuda().float()
+                text = text.cuda().float()
+            with torch.no_grad():
+                output.append(model(user, aural, visual, text))
+        result = torch.concat([output[0], output[1], output[2], output[3], output[4], output[5], output[6], output[7]],
+                              dim=0).cpu().numpy()
+        np.save('./test/2019302130055_{}_{}.npy'.format(str(epoch), str(val)), result)
 
 
 
