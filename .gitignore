@@ -132,3 +132,4 @@ dmypy.json
 *.pt
 *.npy
 test/
+model/

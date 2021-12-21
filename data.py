@@ -83,12 +83,12 @@ def make_dataloader(type='user', train=True, batch_size=128):
         n_examples = len(dataset)
         n_train = int(n_examples * 0.8)
         train_set, val_set = random_split(dataset, [n_train, n_examples - n_train])
-        train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True, drop_last=True)
-        val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True, drop_last=True)
+        train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=2, pin_memory=True, drop_last=True)
+        val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True, num_workers=2, pin_memory=True, drop_last=True)
         return train_loader, val_loader
     else:
         test_set = XiguaData(type, train)
-        test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True, drop_last=True)
+        test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, num_workers=2, pin_memory=True, drop_last=True)
         return test_loader
 
 if __name__ =='__main__':
